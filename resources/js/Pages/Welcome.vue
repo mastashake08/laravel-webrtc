@@ -11,7 +11,19 @@ const props = defineProps({
     }
 })
 
-
+const pc = new RTCPeerConnection();
+let stream = null;
+const grantPermissions = async (constraints = {audio: true}) => {
+    try {
+    stream = await navigator.mediaDevices.getUserMedia(constraints);
+    for (const track of stream.getTracks()) {
+        pc.addTrack(track, stream);
+    }
+    /* use the stream */
+  } catch (err) {
+    /* handle the error */
+  }
+}
 const form = useForm({
     caller_id: '',
     sdp: {}
@@ -57,7 +69,6 @@ const answer = async (caller_id) => {
         },
     });
 };
-const pc = new RTCPeerConnection();
 pc.ondatachannel = (e) => {
     console.log('New data channel', e)
 }
@@ -179,6 +190,13 @@ onMounted(() => {
                                                         Call 
                                                 </PrimaryButton>
                                             </form>
+
+                                            <PrimaryButton
+                                                        class="ms-4"
+                                                        @click="grantPermissions"
+                                                    >
+                                                        Grant Permissions 
+                                                </PrimaryButton>
                                         </p>
                                         
                                             
