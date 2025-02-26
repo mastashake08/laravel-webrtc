@@ -21,6 +21,7 @@ const props = defineProps({
 const hasStream = ref(false);
 const pc = new RTCPeerConnection();
 const stream = ref(null);
+const srcObject = ref(new MediaStream())
 const grantPermissions = async (evt, constraints = {audio: true, video: false}) => {
     try {
         console.log(constraints)
@@ -85,10 +86,13 @@ pc.ondatachannel = (e) => {
 }
 pc.ontrack = (e) => {
     console.log('New track', e)
-    let inboundStream = new MediaStream([e.track]);
-    const audio = new Audio()
-    audio.srcObject = inboundStream;
+    ;
+    srcObject.value.addTrack(e.track);
+    console.log(srcObject)
+    const audio = document.getElementById('audio');
+    audio.srcObject = srcObject.value
     audio.play()
+    console.log(audio.srcObject)
 }
 onMounted(() => {
 
@@ -110,7 +114,6 @@ onMounted(() => {
             console.log(pc)
         }
     });
-    console.log(Echo)
 })
 
 </script>
@@ -213,6 +216,7 @@ onMounted(() => {
                                                     >
                                                         Grant Permissions 
                                                 </PrimaryButton>
+                                                <audio id="audio" controls></audio>
                                         </p>
                                         
                                             
