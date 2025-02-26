@@ -26,7 +26,7 @@ const grantPermissions = async (evt, constraints = {audio: true, video: false}) 
         console.log(constraints)
     stream.value= await navigator.mediaDevices.getUserMedia(constraints);
     for (const track of stream.value.getTracks()) {
-        pc.addTrack(track, stream.value);
+        pc.addTrack(track);
     }
     hasStream.value = true
     /* use the stream */
@@ -85,6 +85,10 @@ pc.ondatachannel = (e) => {
 }
 pc.ontrack = (e) => {
     console.log('New track', e)
+    let inboundStream = new MediaStream([e.track]);
+    const audio = new Audio()
+    audio.srcObject = inboundStream;
+    audio.play()
 }
 onMounted(() => {
 
@@ -205,7 +209,7 @@ onMounted(() => {
                                             <PrimaryButton
                                                         class="ms-4"
                                                         @click="grantPermissions"
-                                                        :v-show="hasStream"
+                                                        v-if="!hasStream"
                                                     >
                                                         Grant Permissions 
                                                 </PrimaryButton>
