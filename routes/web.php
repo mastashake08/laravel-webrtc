@@ -7,10 +7,6 @@ use Inertia\Inertia;
 use Illuminate\Support\Str;
 Route::get('/', function () {
     return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
         'callerId' => Str::random(6)
     ]);
 });

@@ -8,22 +8,8 @@ const props = defineProps({
     callerId: {
         type: String,
 
-    },
-    canLogin: {
-        type: Boolean,
-    },
-    canRegister: {
-        type: Boolean,
-    },
-    laravelVersion: {
-        type: String,
-        required: true,
-    },
-    phpVersion: {
-        type: String,
-        required: true,
-    },
-});
+    }
+})
 
 
 const form = useForm({
@@ -33,7 +19,7 @@ const form = useForm({
 
 const submit = async () => {
     console.log('SUBMIT')
-    await pc.createDataChannel('Test');
+    await pc.createDataChannel(props.callerId);
     form.sdp = await pc.createOffer();
     console.log(form.caller_id)
     await pc.setLocalDescription(form.sdp);
@@ -72,6 +58,12 @@ const answer = async (caller_id) => {
     });
 };
 const pc = new RTCPeerConnection();
+pc.ondatachannel = (e) => {
+    console.log('New data channel', e)
+}
+pc.ontrack = (e) => {
+    console.log('New track', e)
+}
 onMounted(() => {
 
     Echo.channel(props.callerId)
@@ -209,7 +201,7 @@ onMounted(() => {
                             target="_blank"
                             id="docs-card"
                             
-                        >  Laravel v{{ laravelVersion }} (PHP v{{ phpVersion }}) </a>
+                        > Created by Jyrone Parker </a>
                 </footer>
             </div>
         </div>
