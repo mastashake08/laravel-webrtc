@@ -1,27 +1,38 @@
 <script setup>
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import  InputLabel  from '@/components/InputLabel.vue';
-import  TextInput  from '@/components/TextInput.vue';
-import {onMounted} from 'vue'
+import  InputLabel  from '@/Components/InputLabel.vue';
+import  TextInput  from '@/Components/TextInput.vue';
+import {onMounted, ref} from 'vue'
 const props = defineProps({
     callerId: {
         type: String,
 
+    },
+    canLogin: {
+        type: Boolean,
+
+    },
+    canRegister: {
+        type: Boolean,
+
     }
 })
-
+const hasStream = ref(false);
 const pc = new RTCPeerConnection();
-let stream = null;
-const grantPermissions = async (constraints = {audio: true}) => {
+const stream = ref(null);
+const grantPermissions = async (evt, constraints = {audio: true, video: false}) => {
     try {
-    stream = await navigator.mediaDevices.getUserMedia(constraints);
-    for (const track of stream.getTracks()) {
-        pc.addTrack(track, stream);
+        console.log(constraints)
+    stream.value= await navigator.mediaDevices.getUserMedia(constraints);
+    for (const track of stream.value.getTracks()) {
+        pc.addTrack(track, stream.value);
     }
+    hasStream.value = true
     /* use the stream */
   } catch (err) {
     /* handle the error */
+    console.log(err)
   }
 }
 const form = useForm({
@@ -194,6 +205,7 @@ onMounted(() => {
                                             <PrimaryButton
                                                         class="ms-4"
                                                         @click="grantPermissions"
+                                                        :v-show="hasStream"
                                                     >
                                                         Grant Permissions 
                                                 </PrimaryButton>
