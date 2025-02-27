@@ -42,6 +42,9 @@ const grantPermissions = async (evt, constraints = {video: true, video: true}) =
     for (const track of stream.value.getTracks()) {
         pc.addTrack(track, stream.value);
     }
+    const video = document.getElementById('callee_video');
+    video.srcObject = stream.value
+    video.play()
     hasStream.value = true
     /* use the stream */
   } catch (err) {
@@ -229,6 +232,8 @@ onMounted(() => {
                                                         Grant Permissions 
                                                 </PrimaryButton>
                                                <video class="mt-2" id="caller_video"></video>
+
+                                               <video class="mt-2" id="callee_video" muted></video>
                                         </p>
                                         
                                             
