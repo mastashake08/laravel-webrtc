@@ -20,6 +20,7 @@ const props = defineProps({
 })
 const hasStream = ref(false);
 const pc = new RTCPeerConnection();
+pc.createDataChannel(props.callerId);
 pc.oniceconnectionstatechange = () => {
   if (pc.iceConnectionState === "failed") {
     pc.restartIce();
@@ -55,7 +56,7 @@ const form = useForm({
 
 const submit = async () => {
     console.log('SUBMIT')
-    await pc.createDataChannel(props.callerId);
+    
     form.sdp = await pc.createOffer();
     console.log(form.caller_id)
     await pc.setLocalDescription(form.sdp);
