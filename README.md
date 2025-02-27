@@ -1,15 +1,15 @@
-Laravel WebRTC with Reverb & Echo
+# Laravel WebRTC with Reverb & Echo
 
 This project integrates WebRTC with Laravel Reverb and Laravel Echo, enabling real-time peer-to-peer communication using Laravel’s native WebSocket capabilities.
 
-Features
+## Features
 	•	Real-Time Communication: Uses WebRTC for live audio and video calls.
 	•	WebSockets with Laravel Reverb: Provides scalable and low-latency signaling for WebRTC.
 	•	Laravel Echo Integration: Handles WebSocket events seamlessly.
 	•	Vue.js Frontend: A dynamic and interactive UI built with Vue.js.
 	•	Self-Hosted WebSocket Server: No need for third-party WebSocket services.
 
-Prerequisites
+## Prerequisites
 	•	PHP 8+
 	•	Laravel 10+
 	•	Composer
