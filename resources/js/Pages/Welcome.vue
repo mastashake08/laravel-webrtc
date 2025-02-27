@@ -20,14 +20,26 @@ const props = defineProps({
 })
 const hasStream = ref(false);
 const pc = new RTCPeerConnection();
+pc.oniceconnectionstatechange = () => {
+  if (pc.iceConnectionState === "failed") {
+    pc.restartIce();
+  }
+};
+pc.onnegotiationneeded = async () => {
+  try {
+    await pc.setLocalDescription();
+    //signaler.send({ description: pc.localDescription });
+  } catch (err) {
+    console.error(err);
+  } finally {
+  }
+};
 const stream = ref(null);
-const srcObject = ref(new MediaStream())
-const grantPermissions = async (evt, constraints = {audio: true, video: false}) => {
+const grantPermissions = async (evt, constraints = {video: true, video: true}) => {
     try {
-        console.log(constraints)
     stream.value= await navigator.mediaDevices.getUserMedia(constraints);
     for (const track of stream.value.getTracks()) {
-        pc.addTrack(track);
+        pc.addTrack(track, stream.value);
     }
     hasStream.value = true
     /* use the stream */
@@ -87,12 +99,10 @@ pc.ondatachannel = (e) => {
 pc.ontrack = (e) => {
     console.log('New track', e)
     ;
-    srcObject.value.addTrack(e.track);
-    console.log(srcObject)
-    const audio = document.getElementById('audio');
-    audio.srcObject = srcObject.value
-    audio.play()
-    console.log(audio.srcObject)
+    const video = document.getElementById('caller_video');
+    video.srcObject = e.streams[0]
+    video.play()
+    console.log(video.srcObject)
 }
 onMounted(() => {
 
@@ -104,6 +114,7 @@ onMounted(() => {
             const session = notification.sdp;
             session.sdp += "\n";
             pc.setRemoteDescription(session);
+            console.log('START CALLS')
             await answer(notification.caller_id)
             console.log(pc)
             break;
@@ -119,7 +130,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head title="Welcome" />
+    <Head title="WebRTC Laravel Echo Demo" />
     <div class="bg-gray-50 text-black/50 dark:bg-black dark:text-white/50">
         <img
             id="background"
@@ -210,13 +221,13 @@ onMounted(() => {
                                             </form>
 
                                             <PrimaryButton
-                                                        class="ms-4"
+                                                        class="mt-2"
                                                         @click="grantPermissions"
                                                         v-if="!hasStream"
                                                     >
                                                         Grant Permissions 
                                                 </PrimaryButton>
-                                                <audio id="audio" controls></audio>
+                                               <video class="mt-2" id="caller_video"></video>
                                         </p>
                                         
                                             
