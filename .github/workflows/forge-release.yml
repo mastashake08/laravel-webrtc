@@ -1,0 +1,15 @@
+name: Deploy to Laravel Forge on Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    name: Trigger Laravel Forge Deployment
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Call Laravel Forge Deploy Hook
+        run: |
+          curl -X POST "${{ secrets.FORGE_DEPLOY_URL }}"
