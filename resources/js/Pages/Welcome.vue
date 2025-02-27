@@ -129,7 +129,7 @@ onMounted(() => {
 
 <template>
     <Head title="WebRTC Laravel Echo Demo" />
-    <div class="bg-gray-50 text-gray-700 dark:bg-gray-900 dark:text-gray-300">
+    <div class="min-h-screen bg-gray-50 text-gray-700 dark:bg-gray-900 dark:text-gray-300 flex flex-col justify-center items-center">
         <!-- Background Image -->
         <img
             id="background"
@@ -139,80 +139,74 @@ onMounted(() => {
         />
 
         <!-- Main Container -->
-        <div class="relative flex min-h-screen flex-col items-center justify-center selection:bg-red-500 selection:text-white px-4">
-            <div class="relative w-full max-w-4xl px-6 lg:max-w-6xl">
-                <!-- Header -->
-                <header class="flex flex-wrap items-center justify-between py-6">
-                    <!-- Logo -->
-                    <div class="flex justify-center w-full lg:w-auto">
-                        <svg class="h-12 text-red-500 dark:text-white lg:h-16" viewBox="0 0 62 65" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Laravel Logo -->
-                            <path d="..." fill="currentColor" />
-                        </svg>
-                    </div>
+        <div class="relative w-full max-w-4xl px-6 lg:max-w-6xl">
+            <!-- Header -->
+            <header class="flex flex-wrap items-center justify-between py-6">
+                <!-- Logo -->
+                <div class="flex justify-center w-full lg:w-auto">
+                    <svg class="h-12 text-red-500 dark:text-white lg:h-16" viewBox="0 0 62 65" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Laravel Logo -->
+                        <path d="..." fill="currentColor" />
+                    </svg>
+                </div>
 
-                    <!-- Navigation -->
-                    <nav v-if="canLogin" class="flex space-x-4">
-                        <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="px-4 py-2 rounded-md text-gray-900 dark:text-gray-200 transition hover:bg-gray-200 dark:hover:bg-gray-800">
-                            Dashboard
+                <!-- Navigation -->
+                <nav v-if="canLogin" class="flex space-x-4">
+                    <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="px-4 py-2 rounded-md text-gray-900 dark:text-gray-200 transition hover:bg-gray-200 dark:hover:bg-gray-800">
+                        Dashboard
+                    </Link>
+
+                    <template v-else>
+                        <Link :href="route('login')" class="px-4 py-2 rounded-md text-gray-900 dark:text-gray-200 transition hover:bg-gray-200 dark:hover:bg-gray-800">
+                            Log in
                         </Link>
 
-                        <template v-else>
-                            <Link :href="route('login')" class="px-4 py-2 rounded-md text-gray-900 dark:text-gray-200 transition hover:bg-gray-200 dark:hover:bg-gray-800">
-                                Log in
-                            </Link>
+                        <Link v-if="canRegister" :href="route('register')" class="px-4 py-2 rounded-md text-gray-900 dark:text-gray-200 transition hover:bg-gray-200 dark:hover:bg-gray-800">
+                            Register
+                        </Link>
+                    </template>
+                </nav>
+            </header>
 
-                            <Link v-if="canRegister" :href="route('register')" class="px-4 py-2 rounded-md text-gray-900 dark:text-gray-200 transition hover:bg-gray-200 dark:hover:bg-gray-800">
-                                Register
-                            </Link>
-                        </template>
-                    </nav>
-                </header>
+            <!-- Main Content -->
+            <main class="flex flex-col items-center justify-center mt-8">
+                <div class="w-full max-w-2xl p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg transition hover:shadow-xl text-center">
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+                        Laravel WebRTC Echo Example
+                    </h2>
+                    <p class="mt-4 text-sm text-gray-600 dark:text-gray-400">
+                        Simple Laravel WebRTC Example Utilizing Vue, Laravel Echo, and Laravel Reverb.
+                    </p>
+                    <p class="mt-2 font-semibold">Your caller ID is: {{ callerId }}</p>
 
-                <!-- Main Content -->
-                <main class="mt-8">
-                    <div class="grid gap-6 lg:grid-cols-2">
-                        <!-- WebRTC Card -->
-                        <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg transition hover:shadow-xl">
-                            <h2 class="text-xl font-semibold text-center text-gray-900 dark:text-white">
-                                Laravel WebRTC Echo Example
-                            </h2>
-                            <p class="mt-4 text-sm text-gray-600 dark:text-gray-400">
-                                Simple Laravel WebRTC Example Utilizing Vue, Laravel Echo, and Laravel Reverb.
-                            </p>
-                            <p class="mt-2 font-semibold">Your caller ID is: {{ callerId }}</p>
+                    <!-- Caller ID Form -->
+                    <form @submit.prevent="submit" class="mt-4 w-full">
+                        <InputLabel value="Input Caller ID" for="caller_id" class="block w-full text-left" />
+                        <TextInput id="caller_id" v-model="form.caller_id" class="w-full mt-2 p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600" />
+                        <PrimaryButton class="mt-2 w-full">
+                            Call
+                        </PrimaryButton>
+                    </form>
 
-                            <!-- Caller ID Form -->
-                            <form @submit.prevent="submit" class="mt-4">
-                                <InputLabel value="Input Caller ID" for="caller_id" class="block w-full" />
-                                <TextInput id="caller_id" v-model="form.caller_id" class="w-full mt-2 p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600" />
-                                <PrimaryButton class="mt-2 w-full">
-                                    Call
-                                </PrimaryButton>
-                            </form>
+                    <!-- Permission Button -->
+                    <PrimaryButton v-if="!hasStream" @click="grantPermissions" class="mt-4 w-full">
+                        Grant Permissions
+                    </PrimaryButton>
 
-                            <!-- Permission Button -->
-                            <PrimaryButton v-if="!hasStream" @click="grantPermissions" class="mt-4 w-full">
-                                Grant Permissions
-                            </PrimaryButton>
-
-                            <!-- Video Containers -->
-                            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <video id="caller_video" class="w-full border rounded-md shadow-md"></video>
-                                <video id="callee_video" class="w-full border rounded-md shadow-md" muted></video>
-                            </div>
-                        </div>
+                    <!-- Video Containers -->
+                    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <video id="caller_video" class="w-full border rounded-md shadow-md"></video>
+                        <video id="callee_video" class="w-full border rounded-md shadow-md" muted></video>
                     </div>
-                </main>
+                </div>
+            </main>
 
-                <!-- Footer -->
-                <footer class="mt-12 py-6 text-center text-sm text-gray-600 dark:text-gray-400">
-                    <a href="https://jyroneparker.com" target="_blank" class="hover:underline">
-                        Created by Jyrone Parker
-                    </a>
-                </footer>
-            </div>
+            <!-- Footer -->
+            <footer class="mt-12 py-6 text-center text-sm text-gray-600 dark:text-gray-400">
+                <a href="https://jyroneparker.com" target="_blank" class="hover:underline">
+                    Created by Jyrone Parker
+                </a>
+            </footer>
         </div>
     </div>
 </template>
-
