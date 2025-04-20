@@ -36,7 +36,8 @@ pc.onnegotiationneeded = async () => {
   }
 };
 const stream = ref(null);
-const grantPermissions = async (evt, constraints = {video: {
+const grantPermissions = async (evt, constraints = {
+    video: {
       width: { min: 640, ideal: 1920 },
       height: { min: 400, ideal: 1080 },
       aspectRatio: { ideal: 1.7777777778 },
@@ -44,7 +45,7 @@ const grantPermissions = async (evt, constraints = {video: {
     audio: {
       sampleSize: 16,
       channelCount: 2,
-    }) => {
+    }}) => {
     try {
     stream.value= await navigator.mediaDevices.getUserMedia(constraints);
     for (const track of stream.value.getTracks()) {
